@@ -1,12 +1,10 @@
-from asyncio.windows_events import NULL
 import os
 from flask.json import jsonify
 import requests
-from requests.api import head
 from app.utils.schemas import *
-import asyncio
-import aiohttp
-from aiohttp import ClientSession
+# import asyncio
+# import aiohttp
+# from aiohttp import ClientSession
 import json
 
 def fetchGraphQL(query, variables={}):
