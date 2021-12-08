@@ -56,9 +56,9 @@ mutation MyMutation($contacts_phone_numbers: [String!] = "", $password: String =
   }
 }
 """
-{
-  "password": "secret",
-  "username": "Squid",
-  "phone_number": "+14325557297",
-  "contacts_phone_numbers": ["+17865557297","+13335557297","+12345557297"]
-}
+# {
+#   "password": "secret",
+#   "username": "Squid",
+#   "phone_number": "+14325557297",
+#   "contacts_phone_numbers": ["+17865557297","+13335557297","+12345557297"]
+# }

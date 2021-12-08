@@ -89,8 +89,11 @@ def add_friend_rels_from_contacts(user_id, contacts_phone_numbers):
   create_friend_rel_req = fetchGraphQL(CREATE_FRIEND_REL, {
     "friend_rels": friend_rels
   })
-  if (create_friend_rel_req["errors"]):
-    return []
+  try:
+    if (create_friend_rel_req["errors"]):
+      return []
+  except:
+    pass
   new_friend_rels = create_friend_rel_req["data"]["insert_friend_rel"]["returning"]
   new_friend_rels_ids = list(map(lambda x: x["id"], new_friend_rels))
   return new_friend_rels_ids

@@ -53,8 +53,11 @@ def register():
     "phone_number": req["phone_number"],
     "username": req["username"]
   })
-  if (register_user_req["errors"]):
-    return jsonify({"user_id": "User already exists"})
+  try:
+    if (register_user_req["errors"]):
+      return jsonify({"user_id": "User already exists"})
+  except:
+    pass
   register_user_req = register_user_req["data"]["insert_user"]["returning"]
   add_friend_rels_from_contacts(register_user_req[0]["id"], req["contacts_phone_numbers"])
   return jsonify({"user_id": register_user_req[0]["id"]})
