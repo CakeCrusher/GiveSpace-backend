@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
 import requests
 import os
-from app.utils.helperFunctions import fetchGraphQL
-from app.utils.schemas import CREATE_FRIEND_REL, FIND_USERS
+from app.utils.helperFunctions import *
+from app.utils.schemas import *
 
 app = Flask(__name__)
 
@@ -40,27 +40,21 @@ def item_search():
 @app.route('/contacts_to_friends/', methods=['POST'])
 def contacts_to_friends():
   req = request.json["input"]
-  find_users_req = fetchGraphQL(FIND_USERS, {
-    "phone_numbers": req["contacts_phone_numbers"]
-  })
-  print(find_users_req)
-  list_of_user_contacts = map(lambda x: x["phone_number"], find_users_req["data"]["user"])
-  # sort a list of numbers
-  new_friend_rels = []
-  for phone_number in list_of_user_contacts:
-    sorted_pair = sorted([phone_number,req["user_phone_number"]])
-    create_friend_rel_req = fetchGraphQL(CREATE_FRIEND_REL, {
-      "user_first": sorted_pair[0],
-      "user_second": sorted_pair[1],
-      "type": "friends"
-    })
-    try:
-      desired_result = create_friend_rel_req["data"]["insert_friend_rel"]["returning"]
-      if len(desired_result):
-        new_friend_rels.append(desired_result[0]["id"])
-    except:
-      pass
 
+  new_friend_rels = add_friend_rels_from_contacts(req["user_id"], req["contacts_phone_numbers"])
 
   return jsonify({"new_friend_rels": new_friend_rels})
 
+@app.route('/register/', methods=['POST'])
+def register():
+  req = request.json["input"]
+  register_user_req = fetchGraphQL(CREATE_USER, {
+    "password": req["password"],
+    "phone_number": req["phone_number"],
+    "username": req["username"]
+  })
+  if (register_user_req["errors"]):
+    return jsonify({"user_id": "User already exists"})
+  register_user_req = register_user_req["data"]["insert_user"]["returning"]
+  add_friend_rels_from_contacts(register_user_req[0]["id"], req["contacts_phone_numbers"])
+  return jsonify({"user_id": register_user_req[0]["id"]})
