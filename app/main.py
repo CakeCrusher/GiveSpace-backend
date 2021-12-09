@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 import requests
+from bs4 import BeautifulSoup
 import os
 from app.utils.helperFunctions import *
 from app.utils.schemas import *
@@ -61,3 +62,18 @@ def register():
   register_user_req = register_user_req["data"]["insert_user"]["returning"]
   add_friend_rels_from_contacts(register_user_req[0]["id"], req["contacts_phone_numbers"])
   return jsonify({"user_id": register_user_req[0]["id"]})
+
+@app.route('/test/', methods=['POST'])
+def test():
+  headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0",
+        "Accept-Encoding": "gzip, deflate", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "DNT": "1", "Connection": "close", "Upgrade-Insecure-Requests": "1"
+  }
+  req = requests.get("https://www.amazon.com/s?k=television+toshiba&ref=nb_sb_noss_2", headers=headers)
+  soup = BeautifulSoup(req.text, "html.parser")
+  container = soup.find_all('div', {'class': 's-asin'})
+  item = container[0]
+  itemName = item.find('h2').text
+  print('ITEM!', itemName)
+  return 'ok', 200
