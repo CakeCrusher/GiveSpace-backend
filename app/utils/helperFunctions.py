@@ -138,7 +138,7 @@ def scrape_features(item_name):
     print(e)
 
   if len(validItems) == 0:
-    print("req!:", req)
+    print("req!:", req.text)
     return {'name': 'NONE', 'item_url': 'NONE', 'image_url': 'https://icons-for-free.com/iconfiles/png/512/gift+present+icon-1320087141027318051.png', 'price': 0}
 
   return validItems[0]
