@@ -62,3 +62,21 @@ mutation MyMutation($contacts_phone_numbers: [String!] = "", $password: String =
 #   "phone_number": "+14325557297",
 #   "contacts_phone_numbers": ["+17865557297","+13335557297","+12345557297"]
 # }
+
+CREATE_ITEM = """
+mutation MyMutation($price: Float = 1.5, $name: String = "", $item_url: String = "", $image_url: String = "", $list_id: uuid = "") {
+  insert_item(objects: {price: $price, name: $name, item_url: $item_url, image_url: $image_url, list_id: $list_id}) {
+    returning {
+      id
+    }
+  }
+}
+"""
+# {
+#   "list_id": "656e08e4-2b80-4ff4-9175-15b340ccabd9",
+#   "name": "television toshiba",
+#   "item_url": "https://www.amazon.com/Toshiba-43-inch-4K-UHD-Smart-Fire-TV/dp/B0924WSBXH/ref=sr_1_2?keywords=television+toshiba&qid=1639085436&sr=8-2",
+#   "image_url": "https://m.media-amazon.com/images/I/81QvlthwGRS._AC_UY218_.jpg",
+#   "price": 0
+# }
+
