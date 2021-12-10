@@ -83,11 +83,19 @@ def add_friend_rels_from_contacts(user_id, contacts_phone_numbers):
   friend_rels = []
   for id in list_of_user_contacts:
     sorted_pair = sorted([id,user_id])
-    friend_rels.append({
-      "user_first_id": sorted_pair[0],
-      "user_second_id": sorted_pair[1],
-      "type": "friends"
-    })
+    # concat two lists
+    friend_rels = friend_rels + [
+      {
+        "user_first_id": sorted_pair[0],
+        "user_second_id": sorted_pair[1],
+        "type": "friends"
+      },
+      {
+        "user_first_id": sorted_pair[1],
+        "user_second_id": sorted_pair[0],
+        "type": "friends"
+      },
+    ]
   create_friend_rel_req = fetchGraphQL(CREATE_FRIEND_REL, {
     "friend_rels": friend_rels
   })

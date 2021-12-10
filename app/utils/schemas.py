@@ -10,7 +10,7 @@ query MyQuery($phone_numbers: [String!] = "") {
 # }
 
 CREATE_FRIEND_REL = """
-mutation MyMutation($friend_rels: [friend_rel_insert_input!] = {}) {
+mutation MyMutation($friend_rels: [friend_rel_insert_input!] = []) {
   insert_friend_rel(objects: $friend_rels) {
     returning {
       id
