@@ -4,7 +4,6 @@ import os
 from app.utils.helperFunctions import *
 from app.utils.schemas import *
 from argon2 import PasswordHasher
-import jwt
 
 Password = PasswordHasher()
 
