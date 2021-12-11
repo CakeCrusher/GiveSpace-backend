@@ -3,6 +3,10 @@ import requests
 import os
 from app.utils.helperFunctions import *
 from app.utils.schemas import *
+from argon2 import PasswordHasher
+import jwt
+
+Password = PasswordHasher()
 
 app = Flask(__name__)
 
@@ -48,19 +52,35 @@ def contacts_to_friends():
 @app.route('/register/', methods=['POST'])
 def register():
   req = request.json["input"]
+  hashedPassword = Password.hash(req["password"])
   register_user_req = fetchGraphQL(CREATE_USER, {
-    "password": req["password"],
+    "password": hashedPassword,
     "phone_number": req["phone_number"],
     "username": req["username"]
   })
   try:
     if (register_user_req["errors"]):
-      return jsonify({"user_id": "User already exists"})
+      return jsonify({"message": register_user_req["errors"][0]["message"]})
   except:
     pass
-  register_user_req = register_user_req["data"]["insert_user"]["returning"]
-  add_friend_rels_from_contacts(register_user_req[0]["id"], req["contacts_phone_numbers"])
-  return jsonify({"user_id": register_user_req[0]["id"]})
+  register_user_req = register_user_req["data"]["insert_user"]["returning"][0]
+  add_friend_rels_from_contacts(register_user_req["id"], req["contacts_phone_numbers"])
+  return jsonify({"user_id": register_user_req["id"]})
+
+@app.route('/login/', methods=['POST'])
+def login():
+  req = request.json["input"]
+
+  user_response = fetchGraphQL(FIND_USER_BY_USERNAME, {
+    "username": req["username"]
+  })
+  user = user_response["data"]["user"][0]
+  try:
+    Password.verify(user["password"], req["password"])
+    # MISSING JWT AUTHENTICATION AND PASSWORD UPDATING (https://hasura.io/docs/latest/graphql/core/actions/codegen/python-flask.html)
+    return jsonify({"user_id": user["id"]})
+  except:
+    return jsonify({"message": "Invalid username or password"})
 
 @app.route('/scrape_item/', methods=['POST'])
 def scrape_item():

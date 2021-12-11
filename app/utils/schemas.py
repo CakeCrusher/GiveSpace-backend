@@ -9,6 +9,18 @@ query MyQuery($phone_numbers: [String!] = "") {
 #   "phone_numbers": ["+17865557297", "+19545557297"]
 # }
 
+FIND_USER_BY_USERNAME = """
+query MyQuery($username: String = "") {
+  user(where: {username: {_eq: $username}}) {
+    id
+    password
+  }
+}
+"""
+# {
+#   "username": "Krabs"
+# }
+
 CREATE_FRIEND_REL = """
 mutation MyMutation($friend_rels: [friend_rel_insert_input!] = []) {
   insert_friend_rel(objects: $friend_rels) {
