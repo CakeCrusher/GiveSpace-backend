@@ -111,11 +111,20 @@ def upload_image():
   with open(image_path, "wb") as fh:
       fh.write(base64.decodebytes(img_data))
 
+  if os.environ.get('IS_PRODUCTION') == 'false' :
+    print('!key', os.environ.get('GC_PRIVATE_KEY'))
+    print("!isProd")
+    private_key = os.environ.get('GC_PRIVATE_KEY')
+  else :
+    private_key = json.loads(os.environ.get('GC_PRIVATE_KEY'))
+
+  print("!private_key", private_key)
+
   key = {
     "type": "service_account",
     "project_id": "givespace",
     "private_key_id": os.environ.get('GC_KEY_ID'),
-    "private_key": os.environ.get('GC_PRIVATE_KEY'),
+    "private_key": private_key,
     "client_email": os.environ.get('GC_CLIENT_EMAIL'),
     "client_id": os.environ.get('GC_CLIENT_ID'),
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -123,7 +132,6 @@ def upload_image():
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": os.environ.get('GC_CLIENT_CERT')
   }
-  print('!key', key)
   credentials = ServiceAccountCredentials.from_json_keyfile_dict(key)
   client = storage.Client(credentials=credentials, project='givespace')
   bucket = client.get_bucket('givespace-pictures')
