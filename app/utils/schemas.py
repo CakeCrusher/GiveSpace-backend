@@ -92,3 +92,18 @@ mutation MyMutation($price: Float = 1.5, $name: String = "", $item_url: String =
 #   "price": 0
 # }
 
+
+UPDATE_PROFILE_PIC = """
+mutation MyMutation($user_id: uuid = "", $profile_pic_url: String = "") {
+  update_user(where: {id: {_eq: $user_id}}, _set: {profile_pic_url: $profile_pic_url}) {
+    returning {
+      id
+      profile_pic_url
+    }
+  }
+}
+"""
+# {
+#   "user_id": "cec88518-0a56-4c92-b7ab-97d3b01ad2d9",
+#   "profile_pic_url": "https://hakaimagazine.com/wp-content/uploads/header-proboscis-monkeys.jpg"
+# }

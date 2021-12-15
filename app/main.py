@@ -4,6 +4,11 @@ import os
 from app.utils.helperFunctions import *
 from app.utils.schemas import *
 from argon2 import PasswordHasher
+import base64
+import json
+from gcloud import storage
+from oauth2client.service_account import ServiceAccountCredentials
+import uuid
 
 Password = PasswordHasher()
 
@@ -94,3 +99,46 @@ def scrape_item():
   })
   item_id = create_item_res["data"]["insert_item"]["returning"][0]["id"]
   return jsonify({"item_id": item_id})
+
+@app.route('/upload_image/', methods=['POST'])
+def upload_image():
+  req = request.json["input"]
+  image_id = str(uuid.uuid4())
+  image_path = image_id + "." + req["image_type"]
+  old_image_path = req["old_image_url"].split("/")[-1]
+
+  img_data = str.encode(req["image_base64"])
+  with open(image_path, "wb") as fh:
+      fh.write(base64.decodebytes(img_data))
+
+  key = {
+    "type": "service_account",
+    "project_id": "givespace",
+    "private_key_id": os.environ.get('GC_KEY_ID'),
+    "private_key": os.environ.get('GC_PRIVATE_KEY'),
+    "client_email": os.environ.get('GC_CLIENT_EMAIL'),
+    "client_id": os.environ.get('GC_CLIENT_ID'),
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": os.environ.get('GC_CLIENT_CERT')
+  }
+  credentials = ServiceAccountCredentials.from_json_keyfile_dict(key)
+  client = storage.Client(credentials=credentials, project='givespace')
+  bucket = client.get_bucket('givespace-pictures')
+  blob = bucket.blob(image_path)
+  blob.upload_from_filename(image_path)
+  
+  try:
+    bucket.delete_blob(old_image_path)
+  except:
+    pass
+  os.remove(image_path)
+  new_image_url = "https://storage.cloud.google.com/givespace-pictures/" + image_path
+
+  fetchRes = fetchGraphQL(UPDATE_PROFILE_PIC, {
+    "user_id": req["user_id"],
+    "profile_pic_url": new_image_url
+  })
+
+  return jsonify({"user_id": req["user_id"]})
