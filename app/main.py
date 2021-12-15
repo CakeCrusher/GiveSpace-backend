@@ -139,7 +139,7 @@ def upload_image():
   except:
     pass
   os.remove(image_path)
-  new_image_url = "https://storage.cloud.google.com/givespace-pictures/" + image_path
+  new_image_url = "https://storage.googleapis.com/givespace-pictures/" + image_path
 
   fetchRes = fetchGraphQL(UPDATE_PROFILE_PIC, {
     "user_id": req["user_id"],
