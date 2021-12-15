@@ -112,13 +112,9 @@ def upload_image():
       fh.write(base64.decodebytes(img_data))
 
   if os.environ.get('IS_PRODUCTION') == 'false' :
-    print('!key', os.environ.get('GC_PRIVATE_KEY'))
-    print("!isProd")
     private_key = os.environ.get('GC_PRIVATE_KEY')
   else :
     private_key = json.loads(os.environ.get('GC_PRIVATE_KEY'))
-
-  print("!private_key", private_key)
 
   key = {
     "type": "service_account",
