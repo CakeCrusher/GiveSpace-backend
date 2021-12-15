@@ -123,6 +123,7 @@ def upload_image():
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": os.environ.get('GC_CLIENT_CERT')
   }
+  print('!key', key)
   credentials = ServiceAccountCredentials.from_json_keyfile_dict(key)
   client = storage.Client(credentials=credentials, project='givespace')
   bucket = client.get_bucket('givespace-pictures')
