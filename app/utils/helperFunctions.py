@@ -73,8 +73,11 @@ def fetchGraphQL(query, variables={}):
     
 #   return new_friend_rels
 
-def add_friend_rels_from_contacts(user_id, contacts_phone_numbers):
-  # req = request.json["input"]
+def add_friend_rels_from_contacts(user_id, contacts_phone_numbers, user_phone_number):
+  # filter out user_phone_number from contacts_phone_numbers
+  print("!l", len(contacts_phone_numbers))
+  contacts_phone_numbers = list(filter(lambda x: x != user_phone_number, contacts_phone_numbers))
+  print("!l", len(contacts_phone_numbers))
   find_users_req = fetchGraphQL(FIND_USERS, {
     "phone_numbers": contacts_phone_numbers
   })

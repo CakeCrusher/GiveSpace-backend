@@ -68,7 +68,7 @@ def register():
   except:
     pass
   register_user_req = register_user_req["data"]["insert_user"]["returning"][0]
-  add_friend_rels_from_contacts(register_user_req["id"], req["contacts_phone_numbers"])
+  add_friend_rels_from_contacts(register_user_req["id"], req["contacts_phone_numbers"], req["phone_number"])
   return jsonify({"user_id": register_user_req["id"]})
 
 @app.route('/login/', methods=['POST'])
